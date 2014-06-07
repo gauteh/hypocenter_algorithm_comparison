@@ -47,12 +47,6 @@ vel         = args.vel
 ## Output
 print ("output directory: %s" % outdir)
 
-## Set up geometry from input
-print ("loading geometry: %s.." % geometry)
-
-## Load velocity model
-print ("loading velocity model: %s.." % vel)
-
 # do a few simple sanity checks..
 for f in [geometry, vel]:
   if not os.path.exists (f):
@@ -66,6 +60,54 @@ if not os.path.exists (outdir):
 if not os.path.isdir (outdir):
   print ("output directory is not a directory.")
   sys.exit (1)
+
+## Set up geometry from input
+print ("loading geometry: %s.." % geometry)
+reference   = None
+stations    = []
+earthquakes = []
+
+with open(geometry, 'r') as fd:
+  for l in fd.readlines ():
+    l = l.strip()
+    if len(l) > 0 and l[0] != "#":
+      s = l.split (',')
+      if s[0] == "R":
+        if reference is not None:
+          print ("=> reference already set")
+          sys.exit (1)
+        else:
+          reference = [float(s[2]), float(s[3])]
+
+      elif s[0] == "S":
+        stations.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
+
+      elif s[0] == "E":
+        earthquakes.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
+
+if reference is None:
+  print ("=> no reference specified.")
+  sys.exit (1)
+
+if len(stations) == 0:
+  print ("=> no stations specified.")
+  sys.exit (1)
+
+if len(earthquakes) == 0:
+  print ("=> no earthquakes specified.")
+  sys.exit (1)
+
+print ("=> reference: %f, %f" % (reference[0], reference[1]))
+print ("=> stations:")
+for s in stations:
+  print ("  {}: {}, {}, {}".format(*s))
+
+print ("=> earthquakes:")
+for e in earthquakes:
+  print ("  {}: {}, {}, {}".format(*e))
+
+## Load velocity model
+print ("loading velocity model: %s.." % vel)
 
 if args.taup_generate:
   print ("generating taup times..")

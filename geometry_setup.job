@@ -1,0 +1,30 @@
+# specify station and earthquakes
+#
+# the format is as following:
+# type,name,x,y,z
+#
+#   type can be: S = station or E = earthquake
+#   name is an informative name of the station or earthquake
+#   x, y, and z is position in km from a reference grid
+#
+#   z is height over sea level, positive direction upwards, given in km.
+#
+# if type is set to: R = ref the reference position is set,
+# in that case: name and z is ignored and x and y is a reference
+# position given in decimal degrees as in the WGS84 datum.
+#
+# blank lines or lines starting with a # are ignored
+
+# reference
+R,XX,0.0,0.0,X
+
+
+# stations
+S,GAK2,0.0,0.0,0
+S,GAK3,0.0,5.0,0
+S,GAK4,5.0,5.0,0
+
+
+# earthquakes
+E,E01,10.0,10.0,-5.0
+
