@@ -21,7 +21,8 @@
 ## and TauP.
 ##
 ## Arbitrary input geometries may be specified, but the parameters for the
-## solvers are tweaked for local stations and earthquakes (~10-30 km distances)
+## solvers are tweaked for local stations and earthquakes (
+## ~10-30 km distances) and relatively shallow depths (~ 5-10 km).
 
 
 import os, sys
@@ -32,7 +33,7 @@ parser = argparse.ArgumentParser (description = "Test HYPOSAT against the HYPOCE
 parser.add_argument ('-g', '--geometry', default = 'geometry_setup.job',
     help = 'Geometry of stations and earthquake position, see sample geometry_setup.job')
 parser.add_argument ('-v', '--vel', default = 'vel.csv',
-    help = 'Input velocity model for P and S velocity (depth,velp,vels in meters), see sample vel.csv.')
+    help = 'Input velocity model for P and S velocity (depth,velp,vels in km), see sample vel.csv.')
 parser.add_argument ('-o', '--out', default = 'out',
     help = 'Output directory for plots, reports and generated files.')
 
@@ -98,7 +99,7 @@ if len(earthquakes) == 0:
   sys.exit (1)
 
 print ("=> reference: %f, %f" % (reference[0], reference[1]))
-print ("=> stations:")
+print ("=> stations (km):")
 for s in stations:
   print ("  {}: {}, {}, {}".format(*s))
 
@@ -107,8 +108,28 @@ for e in earthquakes:
   print ("  {}: {}, {}, {}".format(*e))
 
 ## Load velocity model
-print ("loading velocity model: %s.." % vel)
+print ("loading velocity model: %s.. (km and km/s)" % vel)
+velocity = []
+with open(vel, 'r') as fd:
+  for l in fd.readlines():
+    l = l.strip()
+    if len(l) > 0 and l[0] != "#":
+      s = [ss.strip() for ss in l.split (',')]
+      velocity.append ( [float(s[0]), float(s[1]), float(s[2]), s[3]] )
+      
+for l in velocity:
+  print ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
 
 if args.taup_generate:
-  print ("generating taup times..")
+  print ("== setting up TauP")
+  print ("=> generate velocity model for TauP..: taup_regional.nd")
+
+  taup_vel_a = os.path.join (outdir, "taup_regional.nd")
+  with open (taup_vel_a, 'w') as fd:
+    for v in velocity:
+      fd.write ("{} {} {}\n".format(*v[0:3]))
+      if v[3] == "seafloor":
+        fd.write ("seafloor\n")
+      elif v[3] == "MOHO":
+        fd.write ("mantle\n")
 
