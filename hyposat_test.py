@@ -28,6 +28,8 @@
 import os, sys
 import argparse
 
+from subprocess import check_call
+
 parser = argparse.ArgumentParser (description = "Test HYPOSAT against the HYPOCENTER and TauP packages (author: Gaute Hope <eg@gaute.vetsj.com> / 2014-06-07)")
 
 parser.add_argument ('-g', '--geometry', default = 'geometry_setup.job',
@@ -116,7 +118,7 @@ with open(vel, 'r') as fd:
     if len(l) > 0 and l[0] != "#":
       s = [ss.strip() for ss in l.split (',')]
       velocity.append ( [float(s[0]), float(s[1]), float(s[2]), s[3]] )
-      
+
 for l in velocity:
   print ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
 
@@ -127,9 +129,14 @@ if args.taup_generate:
   taup_vel_a = os.path.join (outdir, "taup_regional.nd")
   with open (taup_vel_a, 'w') as fd:
     for v in velocity:
-      fd.write ("{} {} {}\n".format(*v[0:3]))
+      fd.write ("%1.1f %1.1f %1.1f\n" % (v[0], v[1], v[2]))
       if v[3] == "seafloor":
         fd.write ("seafloor\n")
       elif v[3] == "MOHO":
         fd.write ("mantle\n")
+
+  # generate taup model
+  check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
+
+
 
