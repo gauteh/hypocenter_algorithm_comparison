@@ -28,7 +28,13 @@
 import os, sys
 import argparse
 
+import numpy as np
+import scipy as sc
+
 from subprocess import check_call
+
+from pyproj import Geod
+g = Geod (ellps = 'WGS84')
 
 parser = argparse.ArgumentParser (description = "Test HYPOSAT against the HYPOCENTER and TauP packages (author: Gaute Hope <eg@gaute.vetsj.com> / 2014-06-07)")
 
@@ -41,17 +47,20 @@ parser.add_argument ('-o', '--out', default = 'out',
 
 parser.add_argument ("-nt", "--skip-generate-taup-times", action = 'store_false', dest = 'taup_generate',
     help = "Provide TauP times manually, useful in case you don't have TauP installed" )
+parser.add_argument ("-pf", "--phase-file", default = 'phases.dat',
+    help = "File with list of phases.")
 
 args = parser.parse_args ()
 outdir      = args.out
 geometry    = args.geometry
 vel         = args.vel
+phasef      = args.phase_file
 
 ## Output
 print ("output directory: %s" % outdir)
 
 # do a few simple sanity checks..
-for f in [geometry, vel]:
+for f in [geometry, vel, phasef]:
   if not os.path.exists (f):
     print ("could not find input file: %s" % f)
     sys.exit (1)
@@ -68,7 +77,7 @@ if not os.path.isdir (outdir):
 print ("loading geometry: %s.." % geometry)
 reference   = None
 stations    = []
-earthquakes = []
+earthquake  = []
 
 with open(geometry, 'r') as fd:
   for l in fd.readlines ():
@@ -86,7 +95,7 @@ with open(geometry, 'r') as fd:
         stations.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
 
       elif s[0] == "E":
-        earthquakes.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
+        earthquake =  [float(s[1]), float(s[2]), float(s[3])]
 
 if reference is None:
   print ("=> no reference specified.")
@@ -96,8 +105,8 @@ if len(stations) == 0:
   print ("=> no stations specified.")
   sys.exit (1)
 
-if len(earthquakes) == 0:
-  print ("=> no earthquakes specified.")
+if len(earthquake ) == 0:
+  print ("=> no earthquake  specified.")
   sys.exit (1)
 
 print ("=> reference: %f, %f" % (reference[0], reference[1]))
@@ -105,9 +114,7 @@ print ("=> stations (km):")
 for s in stations:
   print ("  {}: {}, {}, {}".format(*s))
 
-print ("=> earthquakes:")
-for e in earthquakes:
-  print ("  {}: {}, {}, {}".format(*e))
+print ("=> earthquake: {}, {}, {}".format(*earthquake))
 
 ## Load velocity model
 print ("loading velocity model: %s.. (km and km/s)" % vel)
@@ -121,6 +128,16 @@ with open(vel, 'r') as fd:
 
 for l in velocity:
   print ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
+
+## figure out distances between earthquakes to stations
+distances = []
+for s in stations:
+  #_a, _b, dist = g.inv (s[0], s[1], e[0], e[1])
+
+  dist = np.linalg.norm(np.array(earthquake[:2]) - np.array(s[1:3]))
+  distances.append (dist)
+
+print ("=> distances: " + str(distances))
 
 if args.taup_generate:
   print ("== setting up TauP")
@@ -137,6 +154,9 @@ if args.taup_generate:
 
   # generate taup model
   check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
+
+
+
 
 
 
