@@ -33,6 +33,8 @@ import scipy as sc
 
 from subprocess import check_call
 
+from taup_time import *
+
 from pyproj import Geod
 g = Geod (ellps = 'WGS84')
 
@@ -154,6 +156,12 @@ if args.taup_generate:
 
   # generate taup model
   check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
+
+  ## Calculate traveltimes using TauP
+  t = TauPTime (outdir, "taup_regional.nd", "../phases.dat", stations,
+                earthquake)
+
+  t.calculate_times ()
 
 
 
