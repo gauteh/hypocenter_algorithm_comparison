@@ -47,8 +47,6 @@ parser.add_argument ('-v', '--vel', default = 'vel.csv',
 parser.add_argument ('-o', '--out', default = 'out',
     help = 'Output directory for plots, reports and generated files.')
 
-parser.add_argument ("-nt", "--skip-generate-taup-times", action = 'store_false', dest = 'taup_generate',
-    help = "Provide TauP times manually, useful in case you don't have TauP installed" )
 parser.add_argument ("-pf", "--phase-file", default = 'phases.dat',
     help = "File with list of phases.")
 
@@ -141,29 +139,35 @@ for s in stations:
 
 print ("=> distances: " + str(distances))
 
-if args.taup_generate:
-  print ("== setting up TauP")
-  print ("=> generate velocity model for TauP..: taup_regional.nd")
+print ("== setting up TauP")
+print ("=> generate velocity model for TauP..: taup_regional.nd")
 
-  taup_vel_a = os.path.join (outdir, "taup_regional.nd")
-  with open (taup_vel_a, 'w') as fd:
-    for v in velocity:
-      fd.write ("%1.1f %1.1f %1.1f\n" % (v[0], v[1], v[2]))
-      if v[3] == "seafloor":
-        fd.write ("seafloor\n")
-      elif v[3] == "MOHO":
-        fd.write ("mantle\n")
+taup_vel_a = os.path.join (outdir, "taup_regional.nd")
+with open (taup_vel_a, 'w') as fd:
+  for v in velocity:
+    fd.write ("%1.1f %1.1f %1.1f\n" % (v[0], v[1], v[2]))
+    if v[3] == "seafloor":
+      fd.write ("seafloor\n")
+    elif v[3] == "MOHO":
+      fd.write ("mantle\n")
 
-  # generate taup model
-  check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
+# generate taup model
+check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
 
-  ## Calculate traveltimes using TauP
-  t = TauPTime (outdir, "taup_regional.nd", "../phases.dat", stations,
-                earthquake)
+## Calculate traveltimes using TauP
+t = TauPTime (outdir, "taup_regional.nd", "../phases.dat", stations,
+              earthquake)
 
-  t.calculate_times ()
+taup_times = t.calculate_times ()
 
-
+## write out traveltimes from TauP
+taup_ttimes_f = os.path.join (outdir, "taup_ttimes.dat")
+with open(taup_ttimes_f, 'w') as fd:
+  for s, tt in zip(stations, t.times):
+    for ph in tt:
+      fd.write ("{station},{phase},{time},{distance}\n".format(
+                station = s[0], phase = ph[0], time = ph[1],
+                distance = ph[2]))
 
 
 

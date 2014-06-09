@@ -58,11 +58,30 @@ class TauPTime:
 
 
     out = check_output (cmd, cwd = self.outdir, shell = True)
+    out = out.decode ('ascii')
 
-    print (out)
+    out = out.splitlines ()
+    out = out[5:]
 
+    ph = []
+    for l in out:
+      if len(l.strip()) > 0:
+        ph.append (self.parse_phase (l))
 
-    
+    return ph
+
+  def parse_phase (self, ph):
+    """
+    parse a phase line
+    """
+
+    l = ph.split ()
+    dist = l[0] # in degrees
+    name = l[2]
+    time = l[3]
+
+    return [name, time, dist]
+
 
   
 

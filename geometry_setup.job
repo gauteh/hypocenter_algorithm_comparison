@@ -21,10 +21,10 @@ R,XX,0.0,0.0,X
 
 # stations
 S,GAK2,0.0,0.0,0
-S,GAK3,0.0,5.0,0
-S,GAK4,5.0,5.0,0
+S,GAK3,0.0,20.0,0
+S,GAK4,20.0,20.0,0
 
 
 # earthquake, there can only be one
-E,10.0,10.0,-5.0
+E,15.0,15.0,-5.0
 
