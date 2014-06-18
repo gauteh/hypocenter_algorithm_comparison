@@ -34,6 +34,7 @@ import scipy as sc
 from subprocess import check_call
 
 from taup_time import *
+from hypomod   import *
 
 from pyproj import Geod
 g = Geod (ellps = 'WGS84')
@@ -169,6 +170,9 @@ with open(taup_ttimes_f, 'w') as fd:
                 station = s[0], phase = ph[0], time = ph[1],
                 distance = ph[2]))
 
+## set up HYPOMOD
+print ("== setting up HYPOMOD")
+h = Hypomod (outdir)
 
 
 
