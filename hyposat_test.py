@@ -90,6 +90,9 @@ fileHandler = ll.FileHandler("{0}/log".format(outdir))
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
+version = VERSION if ('VERSION' in locals()) else check_output("git describe --always --tags --abbrev=8", shell = True).decode('ascii').strip()
+ll.info ("hyposat_test: version: %s" % version)
+
 ## Set up geometry from input
 ll.info ("loading geometry: %s.." % geometry)
 reference   = None
