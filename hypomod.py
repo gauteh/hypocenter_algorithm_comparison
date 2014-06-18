@@ -14,6 +14,9 @@ import logging as ll
 from subprocess import check_call, check_output
 
 class Hypomod:
-  def __init__ (self, outdir):
+  def __init__ (self, outdir, vel, stations, earthquake):
+    ll.info ("== setting up HYPOMOD")
     self.outdir = outdir
+    self.bin    = 'hypomod'
+
 

@@ -34,7 +34,7 @@ import scipy as sc
 
 from subprocess import check_call
 
-from taup_time import *
+from taup      import *
 from hypomod   import *
 
 from pyproj import Geod
@@ -155,24 +155,10 @@ for s in stations:
 
 ll.info ("=> distances: " + str(distances))
 
-ll.info ("== setting up TauP")
-ll.info ("=> generate velocity model for TauP..: taup_regional.nd")
-
-taup_vel_a = os.path.join (outdir, "taup_regional.nd")
-with open (taup_vel_a, 'w') as fd:
-  for v in velocity:
-    fd.write ("%1.1f %1.1f %1.1f\n" % (v[0], v[1], v[2]))
-    if v[3] == "seafloor":
-      fd.write ("seafloor\n")
-    elif v[3] == "MOHO":
-      fd.write ("mantle\n")
-
-# generate taup model
-check_call ("taup_create -nd taup_regional.nd", cwd = outdir, shell = True)
 
 ## Calculate traveltimes using TauP
-t = TauPTime (outdir, "taup_regional.nd", "../phases.dat", stations,
-              earthquake)
+t = TauP (outdir, velocity, "../phases.dat", stations,
+          earthquake)
 
 taup_times = t.calculate_times ()
 
@@ -186,8 +172,7 @@ with open(taup_ttimes_f, 'w') as fd:
                 distance = ph[2]))
 
 ## set up HYPOMOD
-ll.info ("== setting up HYPOMOD")
-h = Hypomod (outdir)
+h = Hypomod (outdir, velocity, stations, earthquake)
 
 
 
