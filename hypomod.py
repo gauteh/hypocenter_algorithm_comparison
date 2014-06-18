@@ -102,8 +102,23 @@ OUTPUT LEVEL                       : 4
   def create_velocity_file (self):
     # set up velocity model
     ll.debug ("hypomod: create velocity model file..")
+
+    # skip doubles unless MOHO
+    vels = []
+    for v in self.velocity:
+      if len(vels) > 0 and vels[-1][0] == v[0] and vels[-1][3] != 'MOHO':
+        vels[-1] = v
+      else:
+        vels.append (v)
+
     with open (os.path.join (self.outdir, 'regional.vmod'), 'w') as vfd:
-      pass
+      vfd.write ("20.\n") # maximum distance [deg] to use this model in free format
+      for v in vels:
+        if v[3] == 'MOHO':
+          layer = "MOHO"
+        else:
+          layer = ""
+        vfd.write ("{0:>10.3f}{1:>10.4f}{2:>10.4f}{3}\n".format(v[0], v[1], v[2], layer))
 
       # this follows the format:
       """
