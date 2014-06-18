@@ -15,7 +15,7 @@ import logging as ll
 from subprocess import check_call, check_output
 
 class TauP:
-  times = []
+  times = None 
 
   def __init__ (self, outdir, velocity, phasef, stations, earthquake):
     """
