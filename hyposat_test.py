@@ -34,8 +34,9 @@ import scipy as sc
 
 from subprocess import check_call
 
-from taup      import *
-from hypomod   import *
+from taup       import *
+from hypomod    import *
+from ttlayer    import *
 
 from pyproj import Geod
 g = Geod (ellps = 'WGS84')
@@ -174,5 +175,7 @@ with open(taup_ttimes_f, 'w') as fd:
 ## set up HYPOMOD
 h = Hypomod (outdir, velocity, stations, earthquake)
 
+## set up TTLAYER
+ttl = TTlayer (outdir, velocity, stations, earthquake)
 
 

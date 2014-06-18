@@ -69,7 +69,7 @@ class TauP:
 
 
   def calculate_time (self, station, dist):
-    ll.info ("taup => calculating travel times for: {}".format(station[0]))
+    ll.info ("taup: calculating travel times for: {}".format(station[0]))
 
 
     cmd = "taup_time -mod {vel} -h {depth} -km {dist} -pf {pf}".format (
