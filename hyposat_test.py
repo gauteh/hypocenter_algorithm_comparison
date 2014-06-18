@@ -27,6 +27,7 @@
 
 import os, sys
 import argparse
+import logging as ll
 
 import numpy as np
 import scipy as sc
@@ -58,24 +59,38 @@ vel         = args.vel
 phasef      = args.phase_file
 
 ## Output
-print ("output directory: %s" % outdir)
+rootLogger = ll.getLogger()
+rootLogger.setLevel (ll.DEBUG)
+
+
+logFormatter = ll.Formatter("[%(levelname)-5.5s] %(message)s")
+consoleHandler = ll.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
+
+ll.info ("output directory: %s" % outdir)
 
 # do a few simple sanity checks..
 for f in [geometry, vel, phasef]:
   if not os.path.exists (f):
-    print ("could not find input file: %s" % f)
+    ll.error ("could not find input file: %s" % f)
     sys.exit (1)
 
 if not os.path.exists (outdir):
-  print ("creating outdir..")
+  ll.warn ("creating outdir..")
   os.makedirs (outdir, exist_ok = True)
 
 if not os.path.isdir (outdir):
-  print ("output directory is not a directory.")
+  ll.error ("output directory is not a directory.")
   sys.exit (1)
 
+logFormatter = ll.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
+fileHandler = ll.FileHandler("{0}/log".format(outdir))
+fileHandler.setFormatter(logFormatter)
+rootLogger.addHandler(fileHandler)
+
 ## Set up geometry from input
-print ("loading geometry: %s.." % geometry)
+ll.info ("loading geometry: %s.." % geometry)
 reference   = None
 stations    = []
 earthquake  = []
@@ -87,7 +102,7 @@ with open(geometry, 'r') as fd:
       s = l.split (',')
       if s[0] == "R":
         if reference is not None:
-          print ("=> reference already set")
+          ll.debug ("=> reference already set")
           sys.exit (1)
         else:
           reference = [float(s[2]), float(s[3])]
@@ -99,26 +114,26 @@ with open(geometry, 'r') as fd:
         earthquake =  [float(s[1]), float(s[2]), float(s[3])]
 
 if reference is None:
-  print ("=> no reference specified.")
+  ll.error ("=> no reference specified.")
   sys.exit (1)
 
 if len(stations) == 0:
-  print ("=> no stations specified.")
+  ll.error ("=> no stations specified.")
   sys.exit (1)
 
 if len(earthquake ) == 0:
-  print ("=> no earthquake  specified.")
+  ll.error ("=> no earthquake  specified.")
   sys.exit (1)
 
-print ("=> reference: %f, %f" % (reference[0], reference[1]))
-print ("=> stations (km):")
+ll.info ("=> reference: %f, %f" % (reference[0], reference[1]))
+ll.info ("=> stations (km):")
 for s in stations:
-  print ("  {}: {}, {}, {}".format(*s))
+  ll.info ("  {}: {}, {}, {}".format(*s))
 
-print ("=> earthquake: {}, {}, {}".format(*earthquake))
+ll.info ("=> earthquake: {}, {}, {}".format(*earthquake))
 
 ## Load velocity model
-print ("loading velocity model: %s.. (km and km/s)" % vel)
+ll.info ("loading velocity model: %s.. (km and km/s)" % vel)
 velocity = []
 with open(vel, 'r') as fd:
   for l in fd.readlines():
@@ -128,7 +143,7 @@ with open(vel, 'r') as fd:
       velocity.append ( [float(s[0]), float(s[1]), float(s[2]), s[3]] )
 
 for l in velocity:
-  print ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
+  ll.info ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
 
 ## figure out distances between earthquakes to stations
 distances = []
@@ -138,10 +153,10 @@ for s in stations:
   dist = np.linalg.norm(np.array(earthquake[:2]) - np.array(s[1:3]))
   distances.append (dist)
 
-print ("=> distances: " + str(distances))
+ll.info ("=> distances: " + str(distances))
 
-print ("== setting up TauP")
-print ("=> generate velocity model for TauP..: taup_regional.nd")
+ll.info ("== setting up TauP")
+ll.info ("=> generate velocity model for TauP..: taup_regional.nd")
 
 taup_vel_a = os.path.join (outdir, "taup_regional.nd")
 with open (taup_vel_a, 'w') as fd:
@@ -171,7 +186,7 @@ with open(taup_ttimes_f, 'w') as fd:
                 distance = ph[2]))
 
 ## set up HYPOMOD
-print ("== setting up HYPOMOD")
+ll.info ("== setting up HYPOMOD")
 h = Hypomod (outdir)
 
 

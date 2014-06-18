@@ -10,6 +10,8 @@ import os, sys
 import numpy as np
 import scipy as sc
 
+import logging as ll
+
 from subprocess import check_call, check_output
 
 class TauPTime:
@@ -49,7 +51,7 @@ class TauPTime:
 
 
   def calculate_time (self, station, dist):
-    print ("taup => calculating travel times for: {}".format(station[0]))
+    ll.info ("taup => calculating travel times for: {}".format(station[0]))
 
 
     cmd = "taup_time -mod {vel} -h {depth} -km {dist} -pf {pf}".format (

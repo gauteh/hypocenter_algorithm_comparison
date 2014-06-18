@@ -9,6 +9,8 @@ import os, sys
 import numpy as np
 import scipy as sc
 
+import logging as ll
+
 from subprocess import check_call, check_output
 
 class Hypomod:
