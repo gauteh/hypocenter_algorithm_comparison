@@ -106,7 +106,7 @@ OUTPUT LEVEL                       : 4
     # skip doubles unless MOHO
     vels = []
     for v in self.velocity:
-      if len(vels) > 0 and vels[-1][0] == v[0] and vels[-1][3] != 'MOHO':
+      if len(vels) > 0 and vels[-1][0] == v[0] and (vels[-1][3] != 'MOHO' and vels[-1][3] != 'CONR'):
         vels[-1] = v
       else:
         vels.append (v)
@@ -116,6 +116,8 @@ OUTPUT LEVEL                       : 4
       for v in vels:
         if v[3] == 'MOHO':
           layer = "MOHO"
+        elif v[3] == 'CONR':
+          layer = "CONR"
         else:
           layer = ""
         vfd.write ("{0:>10.3f}{1:>10.4f}{2:>10.4f}{3}\n".format(v[0], v[1], v[2], layer))
