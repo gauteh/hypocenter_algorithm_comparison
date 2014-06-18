@@ -29,7 +29,7 @@ class Hypomod:
     self.create_stations_file ()
 
   def create_parameter_file (self):
-    ll.debug ("hypomod: creating parameter file..")
+    ll.debug ("hypomod: creating parameter file..: hyposat-parameter")
     with open (os.path.join (self.outdir, 'hyposat-parameter'), 'w') as pfd:
       # write standard parameters. note that these are tuned
       # for the test case this program was created for: local earthquakes with
@@ -101,9 +101,9 @@ OUTPUT LEVEL                       : 4
 
   def create_velocity_file (self):
     # set up velocity model
-    ll.debug ("hypomod: create velocity model file..")
+    ll.debug ("hypomod: create velocity model file..: regional.vmod")
 
-    # skip doubles unless MOHO
+    # skip doubles unless MOHO or CONR
     vels = []
     for v in self.velocity:
       if len(vels) > 0 and vels[-1][0] == v[0] and (vels[-1][3] != 'MOHO' and vels[-1][3] != 'CONR'):
