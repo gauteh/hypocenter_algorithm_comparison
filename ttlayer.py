@@ -14,14 +14,15 @@ import logging as ll
 from subprocess import check_call, check_output
 
 class TTlayer:
-  def __init__ (self, outdir, vel, stations, earthquake):
+  def __init__ (self, outdir, geometry):
     ll.info ("== setting up TTlayer")
     self.outdir = outdir
     self.bin    = 'ttlayer'
 
-    self.velocity   = vel
-    self.stations   = stations
-    self.earthquake = earthquake
+    self.geometry   = geometry
+    self.velocity   = geometry.velocities
+    self.stations   = geometry.stations
+    self.earthquake = geometry.earthquake
 
     self.create_input_file ()
 

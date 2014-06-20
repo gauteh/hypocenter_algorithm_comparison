@@ -11,17 +11,19 @@ import scipy as sc
 
 import logging as ll
 
+
 from subprocess import check_call, check_output
 
 class Hypomod:
-  def __init__ (self, outdir, vel, stations, earthquake):
+  def __init__ (self, outdir, geometry):
     ll.info ("== setting up HYPOMOD")
     self.outdir = outdir
     self.bin    = 'hypomod'
 
-    self.velocity   = vel
-    self.stations   = stations
-    self.earthquake = earthquake
+    self.geometry   = geometry
+    self.velocity   = geometry.velocities
+    self.stations   = geometry.stations
+    self.earthquake = geometry.earthquake
 
     self.create_parameter_file ()
     self.create_velocity_file ()
@@ -139,7 +141,9 @@ OUTPUT LEVEL                       : 4
     # set up stations
     ll.debug ("hypomod: create stations file..")
     with open (os.path.join (self.outdir, 'stations.dat'), 'w') as sfd:
-      pass
+      for s in self.stations:
+        sfd.write ("{0:<6s}{1}{2}\n".format(s[0], s[1], s[2]))
+
 
   def create_input_file (self):
     # set up stations

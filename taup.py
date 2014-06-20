@@ -17,7 +17,7 @@ from subprocess import check_call, check_output
 class TauP:
   times = None 
 
-  def __init__ (self, outdir, velocity, phasef, stations, earthquake):
+  def __init__ (self, outdir, geometry, phasef):
     """
     Set up everything needed for running taup_time,
     file names are relative to outdir.
@@ -25,11 +25,12 @@ class TauP:
     ll.info ("== setting up TauP")
 
     self.outdir     = outdir
-    self.velocity   = velocity
+    self.geometry   = geometry
+    self.velocity   = geometry.velocities
     self.velf       = ""
     self.phasef     = phasef
-    self.stations   = stations
-    self.earthquake = earthquake
+    self.stations   = geometry.stations
+    self.earthquake = geometry.earthquake
 
     self.create_velocity_model ()
     self.distances  = self.calculate_distances ()

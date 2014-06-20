@@ -8,8 +8,8 @@
 #
 # Requirements:
 # - numpy and scipy
-# - HYPOSAT     (as provided by SEISAN)
-# - HYPOMOD     (as provided by SEISAN) (forward modelling for HYPOSAT)
+# - HYPOSAT     
+# - HYPOMOD     (forward modelling for HYPOSAT)
 # - HYPOCENTER  (as provided by SEISAN)
 # - TTLAYER     (as provided by SEISAN) (forward modelling for HYPOCENTER)
 # - TauP
@@ -37,9 +37,7 @@ from subprocess import check_call
 from taup       import *
 from hypomod    import *
 from ttlayer    import *
-
-from pyproj import Geod
-g = Geod (ellps = 'WGS84')
+from geometry   import *
 
 parser = argparse.ArgumentParser (description = "Test HYPOSAT against the HYPOCENTER and TauP packages (author: Gaute Hope <eg@gaute.vetsj.com> / 2014-06-07)")
 
@@ -130,6 +128,7 @@ if len(earthquake ) == 0:
   sys.exit (1)
 
 ll.info ("=> reference: %f, %f" % (reference[0], reference[1]))
+
 ll.info ("=> stations (km):")
 for s in stations:
   ll.info ("  {}: {}, {}, {}".format(*s))
@@ -149,20 +148,10 @@ with open(vel, 'r') as fd:
 for l in velocity:
   ll.info ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
 
-## figure out distances between earthquakes to stations
-distances = []
-for s in stations:
-  #_a, _b, dist = g.inv (s[0], s[1], e[0], e[1])
-
-  dist = np.linalg.norm(np.array(earthquake[:2]) - np.array(s[1:3]))
-  distances.append (dist)
-
-ll.info ("=> distances: " + str(distances))
-
+geometry = Geometry (reference, stations, earthquake, velocity)
 
 ## Calculate traveltimes using TauP
-t = TauP (outdir, velocity, "../phases.dat", stations,
-          earthquake)
+t = TauP (outdir, geometry, "../phases.dat")
 
 taup_times = t.calculate_times ()
 
@@ -176,9 +165,9 @@ with open(taup_ttimes_f, 'w') as fd:
                 distance = ph[2]))
 
 ## set up HYPOMOD
-h = Hypomod (outdir, velocity, stations, earthquake)
+h = Hypomod (outdir, geometry)
 
 ## set up TTLAYER
-ttl = TTlayer (outdir, velocity, stations, earthquake)
+ttl = TTlayer (outdir, geometry)
 
 
