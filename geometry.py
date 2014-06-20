@@ -27,6 +27,8 @@ class Geometry:
     self.velocities = velocities
 
     self.calculate_distances ()
+    self.calculate_degrees ()
+    self.assert_degree_distances ()
 
   def calculate_distances (self):
     ## figure out distances between earthquakes to stations
@@ -38,6 +40,12 @@ class Geometry:
       self.distances.append (dist)
 
     ll.info ("=> distances: " + str(self.distances))
+
+  def calculate_degrees (self):
+    pass
+
+  def assert_degree_distances (self):
+    pass
 
   def stations_degrees (self):
     """ calculate station positions in degrees as offset km from reference point """

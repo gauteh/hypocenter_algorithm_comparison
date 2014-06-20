@@ -8,7 +8,7 @@
 #
 # Requirements:
 # - numpy and scipy
-# - HYPOSAT     
+# - HYPOSAT
 # - HYPOMOD     (forward modelling for HYPOSAT)
 # - HYPOCENTER  (as provided by SEISAN)
 # - TTLAYER     (as provided by SEISAN) (forward modelling for HYPOCENTER)
@@ -89,7 +89,7 @@ fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
 version = VERSION if ('VERSION' in locals()) else check_output("git describe --always --tags --abbrev=8", shell = True).decode('ascii').strip()
-ll.info ("hyposat_test: version: %s" % version)
+ll.info ("hypocenter algorithm comparison: version: %s" % version)
 
 ## Set up geometry from input
 ll.info ("loading geometry: %s.." % geometry)
@@ -151,7 +151,7 @@ for l in velocity:
 geometry = Geometry (reference, stations, earthquake, velocity)
 
 ## Calculate traveltimes using TauP
-t = TauP (outdir, geometry, "../phases.dat")
+t = TauP (outdir, geometry, os.path.abspath(phasef))
 
 taup_times = t.calculate_times ()
 
