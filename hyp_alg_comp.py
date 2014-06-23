@@ -166,6 +166,7 @@ with open(taup_ttimes_f, 'w') as fd:
 
 ## set up HYPOMOD
 h = Hypomod (outdir, geometry)
+h.calculate_times ()
 
 ## set up TTLAYER
 ttl = TTlayer (outdir, geometry)

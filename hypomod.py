@@ -27,7 +27,7 @@ class Hypomod:
 
     self.create_parameter_file ()
     self.create_velocity_file ()
-    self.create_input_file ()
+    #self.create_input_file ()
     self.create_stations_file ()
 
   def create_parameter_file (self):
@@ -145,11 +145,17 @@ OUTPUT LEVEL                       : 4
         sfd.write ("{0:<6s}{1}{2}\n".format(s[0], s[1], s[2]))
 
 
+  def calculate_times (self):
+    out = check_output ("hypomod", cwd = self.outdir, shell = True)
+    out = out.decode ('ascii')
+
+  """
   def create_input_file (self):
     # set up stations
     ll.debug ("hypomod: create input file..")
     with open (os.path.join (self.outdir, 'hyposat-in'), 'w') as ifd:
       pass
+  """
 
 
 

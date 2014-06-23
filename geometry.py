@@ -41,13 +41,28 @@ class Geometry:
 
     ll.info ("=> distances: " + str(self.distances))
 
-  def calculate_degrees (self):
-    pass
-
   def assert_degree_distances (self):
     pass
 
-  def stations_degrees (self):
+  def calculate_degrees (self):
     """ calculate station positions in degrees as offset km from reference point """
-    pass
+
+    # azimuths: direction of vectors is used as azimuth
+    #           since the reference point is set to be in
+    #           coordinates 0, 0.
+
+    ll.debug ("=> calulcating station positions in degrees..")
+    self.stationsd = []
+    for s in self.stations:
+      d  = np.linalg.norm(np.array(s[1:3]))
+      az = np.arctan2(s[1], s[2]) * 180 / np.pi
+      ll.debug ("{}: {}, azimuth: {}, distance: {}".format(s[0], s[1:3], az, d))
+
+      lon, lat, backaz = g.fwd (self.reference[0], self.reference[1], az, d * 1000.0)
+      self.stationsd.append ([s[0], lon, lat, s[3]])
+
+    ll.info ("=> stations (deg):")
+    for s in self.stationsd:
+      ll.info ("  {}: {}, {}, {}".format(*s))
+
 
