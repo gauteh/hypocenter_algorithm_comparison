@@ -146,7 +146,7 @@ OUTPUT LEVEL                       : 4
       for s in self.geometry.stationsd:
         lon = decimaldegree_ddmmss (abs(s[1])) + 'E' if s[1] >= 0 else 'W'
         lat = decimaldegree_ddmmss (abs(s[2])) + 'N' if s[2] >= 0 else 'S'
-        sfd.write ("{0:<6s}{1:>9}{2:>9}\n".format(s[0], lat, lon))
+        sfd.write ("{0:<6s}{1:>8} {2:>8} {3:6.1f}\n".format(s[0], lat, lon, s[3]))
 
 
   def calculate_times (self):
