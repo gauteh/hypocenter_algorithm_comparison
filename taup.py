@@ -74,10 +74,11 @@ class TauP:
     ll.info ("taup: calculating travel times for: {}".format(station[0]))
 
 
-    cmd = "taup_time -mod {vel} -h {depth} -km {dist} -pf {pf}".format (
+    cmd = "taup_time -mod {vel} -h {depth} -km {dist:.3f} -pf {pf}".format (
            vel = os.path.basename(self.velf).replace (".nd", ""), depth = -self.earthquake[2],
            dist = dist, pf = self.phasef)
 
+    #print (cmd)
 
     out = check_output (cmd, cwd = self.outdir, shell = True)
     out = out.decode ('ascii')
@@ -103,6 +104,8 @@ class TauP:
     dist = l[0] # in degrees
     name = l[2]
     time = l[3]
+
+    #print (time)
 
     return [name, time, dist]
 

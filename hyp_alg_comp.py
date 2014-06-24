@@ -51,125 +51,134 @@ parser.add_argument ('-o', '--out', default = 'out',
 parser.add_argument ("-pf", "--phase-file", default = 'phases.dat',
     help = "File with list of phases.")
 
-args = parser.parse_args ()
-outdir      = args.out
-geometry    = args.geometry
-vel         = args.vel
-phasef      = args.phase_file
 
 ## Output
 rootLogger = ll.getLogger()
 rootLogger.setLevel (ll.DEBUG)
-
 
 logFormatter = ll.Formatter("[%(levelname)-5.5s] %(message)s")
 consoleHandler = ll.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 
-ll.info ("output directory: %s" % outdir)
+class HyComp:
+  def __init__ (self, outdir, geometryf, vel, phasef):
+    ll.info ("output directory: %s" % outdir)
 
-# do a few simple sanity checks..
-for f in [geometry, vel, phasef]:
-  if not os.path.exists (f):
-    ll.error ("could not find input file: %s" % f)
-    sys.exit (1)
+    self.outdir     = outdir
+    self.geometryf  = geometryf
+    self.vel        = vel
+    self.phasef     = phasef
 
-if not os.path.exists (outdir):
-  ll.warn ("creating outdir..")
-  os.makedirs (outdir, exist_ok = True)
+    # do a few simple sanity checks..
+    for f in [geometryf, vel, phasef]:
+      if not os.path.exists (f):
+        ll.error ("could not find input file: %s" % f)
+        sys.exit (1)
 
-if not os.path.isdir (outdir):
-  ll.error ("output directory is not a directory.")
-  sys.exit (1)
+    if not os.path.exists (outdir):
+      ll.warn ("creating outdir..")
+      os.makedirs (outdir, exist_ok = True)
 
-logFormatter = ll.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
-fileHandler = ll.FileHandler("{0}/log".format(outdir))
-fileHandler.setFormatter(logFormatter)
-rootLogger.addHandler(fileHandler)
+    if not os.path.isdir (outdir):
+      ll.error ("output directory is not a directory.")
+      sys.exit (1)
 
-version = VERSION if ('VERSION' in locals()) else check_output("git describe --always --tags --abbrev=8", shell = True).decode('ascii').strip()
-ll.info ("hypocenter algorithm comparison: version: %s" % version)
+    logFormatter = ll.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
+    fileHandler = ll.FileHandler("{0}/log".format(outdir))
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
 
-## Set up geometry from input
-ll.info ("loading geometry: %s.." % geometry)
-reference   = None
-stations    = []
-earthquake  = []
+    version = VERSION if ('VERSION' in locals()) else check_output("git describe --always --tags --abbrev=8", shell = True).decode('ascii').strip()
+    ll.info ("hypocenter algorithm comparison: version: %s" % version)
 
-with open(geometry, 'r') as fd:
-  for l in fd.readlines ():
-    l = l.strip()
-    if len(l) > 0 and l[0] != "#":
-      s = l.split (',')
-      if s[0] == "R":
-        if reference is not None:
-          ll.debug ("=> reference already set")
-          sys.exit (1)
-        else:
-          reference = [float(s[2]), float(s[3])]
+    ## Set up geometry from input
+    ll.info ("loading geometry: %s.." % geometryf)
+    reference   = None
+    stations    = []
+    earthquake  = []
 
-      elif s[0] == "S":
-        stations.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
+    with open(geometryf, 'r') as fd:
+      for l in fd.readlines ():
+        l = l.strip()
+        if len(l) > 0 and l[0] != "#":
+          s = l.split (',')
+          if s[0] == "R":
+            if reference is not None:
+              ll.debug ("=> reference already set")
+              sys.exit (1)
+            else:
+              reference = [float(s[2]), float(s[3])]
 
-      elif s[0] == "E":
-        earthquake =  [float(s[1]), float(s[2]), float(s[3])]
+          elif s[0] == "S":
+            stations.append ( [s[1], float(s[2]), float(s[3]), float(s[4])] )
 
-if reference is None:
-  ll.error ("=> no reference specified.")
-  sys.exit (1)
+          elif s[0] == "E":
+            earthquake =  [float(s[1]), float(s[2]), float(s[3])]
 
-if len(stations) == 0:
-  ll.error ("=> no stations specified.")
-  sys.exit (1)
+    if reference is None:
+      ll.error ("=> no reference specified.")
+      sys.exit (1)
 
-if len(earthquake ) == 0:
-  ll.error ("=> no earthquake  specified.")
-  sys.exit (1)
+    if len(stations) == 0:
+      ll.error ("=> no stations specified.")
+      sys.exit (1)
 
-ll.info ("=> reference: %f, %f" % (reference[0], reference[1]))
+    if len(earthquake ) == 0:
+      ll.error ("=> no earthquake  specified.")
+      sys.exit (1)
 
-ll.info ("=> stations (km):")
-for s in stations:
-  ll.info ("  {}: {}, {}, {}".format(*s))
+    ll.info ("=> reference: %f, %f" % (reference[0], reference[1]))
 
-ll.info ("=> earthquake: {}, {}, {}".format(*earthquake))
+    ll.info ("=> stations (km):")
+    for s in stations:
+      ll.info ("  {}: {}, {}, {}".format(*s))
 
-## Load velocity model
-ll.info ("loading velocity model: %s.. (km and km/s)" % vel)
-velocity = []
-with open(vel, 'r') as fd:
-  for l in fd.readlines():
-    l = l.strip()
-    if len(l) > 0 and l[0] != "#":
-      s = [ss.strip() for ss in l.split (',')]
-      velocity.append ( [float(s[0]), float(s[1]), float(s[2]), s[3]] )
+    ll.info ("=> earthquake: {}, {}, {}".format(*earthquake))
 
-for l in velocity:
-  ll.info ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
+    ## Load velocity model
+    ll.info ("loading velocity model: %s.. (km and km/s)" % vel)
+    velocity = []
+    with open(vel, 'r') as fd:
+      for l in fd.readlines():
+        l = l.strip()
+        if len(l) > 0 and l[0] != "#":
+          s = [ss.strip() for ss in l.split (',')]
+          velocity.append ( [float(s[0]), float(s[1]), float(s[2]), s[3]] )
 
-geometry = Geometry (reference, stations, earthquake, velocity)
+    for l in velocity:
+      ll.info ("  depth: {:>4}, velp: {:>5}, vels: {:>5} ({})".format(*l))
 
-## Calculate traveltimes using TauP
-t = TauP (outdir, geometry, os.path.abspath(phasef))
+    self.geometry = Geometry (reference, stations, earthquake, velocity)
 
-taup_times = t.calculate_times ()
-print (taup_times)
+  def calculate_ttimes (self):
+    ## Calculate traveltimes using TauP
+    self.taup = TauP (self.outdir, self.geometry, os.path.abspath(self.phasef))
 
-## write out traveltimes from TauP
-taup_ttimes_f = os.path.join (outdir, "taup_ttimes.dat")
-with open(taup_ttimes_f, 'w') as fd:
-  for ph in t.times:
-    fd.write ("{station},{phase},{time},{distance}\n".format(
-              station = ph[0], phase = ph[1], time = ph[2],
-              distance = ph[3]))
+    self.taup_times = self.taup.calculate_times ()
 
-## set up HYPOMOD
-h = Hypomod (outdir, geometry)
-hypmod_ttimes = h.calculate_times ()
-print (hypmod_ttimes)
+    ## write out traveltimes from TauP
+    taup_ttimes_f = os.path.join (outdir, "taup_ttimes.dat")
+    with open(taup_ttimes_f, 'w') as fd:
+      for ph in self.taup.times:
+        fd.write ("{station},{phase},{time},{distance}\n".format(
+                  station = ph[0], phase = ph[1], time = ph[2],
+                  distance = ph[3]))
 
-## set up TTLAYER
-ttl = TTlayer (outdir, geometry)
+    ## set up HYPOMOD
+    self.hypmod = Hypomod (self.outdir, self.geometry)
+    self.hypmod_ttimes = self.hypmod.calculate_times ()
 
+    ## set up TTLAYER
+    self.ttlayer = TTlayer (self.outdir, self.geometry)
+
+if __name__ == '__main__':
+  args        = parser.parse_args ()
+  outdir      = args.out
+  geometry    = args.geometry
+  vel         = args.vel
+  phasef      = args.phase_file
+
+  hc = HyComp (outdir, geometry, vel, phasef)
+  hc.calculate_ttimes ()
 
