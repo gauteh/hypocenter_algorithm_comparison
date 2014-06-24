@@ -64,7 +64,8 @@ class TauP:
   def calculate_times (self):
     self.times = []
     for s,d in zip(self.stations, self.distances):
-      self.times.append (self.calculate_time (s, d))
+      for ph in self.calculate_time (s, d):
+        self.times.append (ph)
 
     return self.times
 
@@ -87,7 +88,9 @@ class TauP:
     ph = []
     for l in out:
       if len(l.strip()) > 0:
-        ph.append (self.parse_phase (l))
+        p = self.parse_phase (l)
+        p.insert (0, station[0])
+        ph.append (p)
 
     return ph
 

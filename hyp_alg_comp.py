@@ -154,19 +154,20 @@ geometry = Geometry (reference, stations, earthquake, velocity)
 t = TauP (outdir, geometry, os.path.abspath(phasef))
 
 taup_times = t.calculate_times ()
+print (taup_times)
 
 ## write out traveltimes from TauP
 taup_ttimes_f = os.path.join (outdir, "taup_ttimes.dat")
 with open(taup_ttimes_f, 'w') as fd:
-  for s, tt in zip(stations, t.times):
-    for ph in tt:
-      fd.write ("{station},{phase},{time},{distance}\n".format(
-                station = s[0], phase = ph[0], time = ph[1],
-                distance = ph[2]))
+  for ph in t.times:
+    fd.write ("{station},{phase},{time},{distance}\n".format(
+              station = ph[0], phase = ph[1], time = ph[2],
+              distance = ph[3]))
 
 ## set up HYPOMOD
 h = Hypomod (outdir, geometry)
-h.calculate_times ()
+hypmod_ttimes = h.calculate_times ()
+print (hypmod_ttimes)
 
 ## set up TTLAYER
 ttl = TTlayer (outdir, geometry)

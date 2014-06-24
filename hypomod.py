@@ -173,10 +173,39 @@ OUTPUT LEVEL                       : 4
 
         sfd.write ("{0:<5s} {1:>9}{2:>10} {3:6.1f}\n".format(s[0], lat, lon, s[3]))
 
-
   def calculate_times (self):
-    ll.info ("=> running HYPOMOD..")
+    ll.info ("=> hypomod: running HYPOMOD..")
     check_output ("hypomod", cwd = self.outdir, shell = True)
+
+    return self.parse_times ()
+
+  def parse_times (self):
+    ll.debug ("=> hypomod: parsing result..")
+    stationlines = []
+    with open(os.path.join (self.outdir, 'hypomod-out'), 'r') as ofd:
+      start = False
+      for l in ofd.readlines ():
+        if 'Stat' in l:
+          start = True
+          continue
+
+        if start:
+          if 'Travel-time differences:' in l:
+            break
+          elif len(l.strip ()) > 0:
+            stationlines.append (l)
+
+    stationlines = [[k.strip() for k in l.split (' ') if len(k.strip()) > 0] for l in stationlines]
+
+    ttimes = []
+    for s in self.stations:
+      pht = []
+      for l in (ll for ll in stationlines if ll[0] == s[0]):
+        # station name, phase name, ttime
+        pht.append ([s[0], l[3], -float(l[8])])
+      ttimes.append (pht)
+
+    return ttimes
 
   def create_input_file (self):
     # set up stations
