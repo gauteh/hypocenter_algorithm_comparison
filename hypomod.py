@@ -22,6 +22,9 @@ class Hypomod:
     self.outdir = outdir
     self.bin    = 'hypomod'
 
+    self.set_geometry (geometry)
+
+  def set_geometry (self, geometry):
     self.geometry   = geometry
     self.velocity   = geometry.velocities
     self.stations   = geometry.stations

@@ -25,15 +25,17 @@ class TauP:
     ll.info ("== setting up TauP")
 
     self.outdir     = outdir
+    self.phasef     = phasef
+    self.set_geometry (geometry)
+
+  def set_geometry (self, geometry):
     self.geometry   = geometry
     self.velocity   = geometry.velocities
     self.velf       = ""
-    self.phasef     = phasef
     self.stations   = geometry.stations
     self.earthquake = geometry.earthquake
 
     self.create_velocity_model ()
-    self.distances  = self.calculate_distances ()
 
   def create_velocity_model (self):
     ll.info ("=> generate velocity model for TauP..: taup_regional.nd")
@@ -50,20 +52,9 @@ class TauP:
     # generate taup model
     check_output ("taup_create -nd taup_regional.nd", cwd = self.outdir, shell = True)
 
-  def calculate_distances (self):
-    ## figure out distances between earthquakes to stations
-    distances = []
-    for s in self.stations:
-      #_a, _b, dist = g.inv (s[0], s[1], e[0], e[1])
-
-      dist = np.linalg.norm(np.array(self.earthquake[:2]) - np.array(s[1:3]))
-      distances.append (dist)
-
-    return distances
-
   def calculate_times (self):
     self.times = []
-    for s,d in zip(self.stations, self.distances):
+    for s,d in zip(self.stations, self.geometry.distances):
       for ph in self.calculate_time (s, d):
         self.times.append (ph)
 
