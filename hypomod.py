@@ -11,8 +11,10 @@ import scipy as sc
 
 import logging as ll
 
-
 from subprocess import check_call, check_output
+
+sys.path.append ('/home/gaute/dev/nersc/acoustic_processing/')
+from utils.coordinates import *
 
 class Hypomod:
   def __init__ (self, outdir, geometry):
@@ -141,8 +143,10 @@ OUTPUT LEVEL                       : 4
     # set up stations
     ll.debug ("hypomod: create stations file..")
     with open (os.path.join (self.outdir, 'stations.dat'), 'w') as sfd:
-      for s in self.stations:
-        sfd.write ("{0:<6s}{1}{2}\n".format(s[0], s[1], s[2]))
+      for s in self.geometry.stationsd:
+        lon = decimaldegree_ddmmss (abs(s[1])) + 'E' if s[1] >= 0 else 'W'
+        lat = decimaldegree_ddmmss (abs(s[2])) + 'N' if s[2] >= 0 else 'S'
+        sfd.write ("{0:<6s}{1:>9}{2:>9}\n".format(s[0], lat, lon))
 
 
   def calculate_times (self):
