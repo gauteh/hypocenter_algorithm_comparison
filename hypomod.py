@@ -66,13 +66,13 @@ LR GROUP-VELOCITY (DEF 3.95 [km/s]):  3.95
 STARTING SOURCE TIME (EPOCHAL TIME): 0.
 STARTING TIME ERROR       [s]      : 0.
 
-STARTING SOURCE DEPTH     [km]     : {depth:.4f} 
+STARTING SOURCE DEPTH     [km]     : {depth:.4f}
 DEPTH FLAG (f,b,d,F,B,D)           : f
 
-STARTING SOURCE LATITUDE  [deg]    : {lat:<.3f} 
+STARTING SOURCE LATITUDE  [deg]    : {lat:<.3f}
 STARTING LATITUDE ERROR   [deg]    : 0.001
 
-STARTING SOURCE LONGITUDE [deg]    : {lon:<.3f} 
+STARTING SOURCE LONGITUDE [deg]    : {lon:<.3f}
 STARTING LONGITUDE ERROR  [deg]    : 0.001
 
 MAGNITUDE CALCULATION (DEF 0)      : 0
@@ -169,16 +169,14 @@ OUTPUT LEVEL                       : 4
           k += 1
 
         llat += lat[k:]
-        lat = llat 
+        lat = llat
 
         sfd.write ("{0:<5s} {1:>9}{2:>10} {3:6.1f}\n".format(s[0], lat, lon, s[3]))
 
 
   def calculate_times (self):
-    out = check_output ("hypomod", cwd = self.outdir, shell = True)
-    out = out.decode ('ascii')
-
-    print (out)
+    ll.info ("=> running HYPOMOD..")
+    check_output ("hypomod", cwd = self.outdir, shell = True)
 
   def create_input_file (self):
     # set up stations
