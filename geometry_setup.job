@@ -16,7 +16,7 @@
 # blank lines or lines starting with a # are ignored
 
 # reference
-R,XX,0.0,0.0,X
+R,XX,1.0,0.0,X
 
 
 # stations
