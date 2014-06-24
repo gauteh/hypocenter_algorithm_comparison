@@ -70,8 +70,8 @@ class Geometry:
     az = np.arctan2(self.earthquake[0], self.earthquake[1]) * 180 / np.pi
     lon, lat, backaz = g.fwd (self.reference[0], self.reference[1], az, d * 1000.0)
     self.earthquaked = [lon, lat, self.earthquake[2]]
-    ll.debug ("  {}, az: {}, ds: {}".format(self.earthquake[0:2], az, d))
-    ll.debug ("  position: {}".format (self.earthquaked))
+    ll.debug ("  {}, az: {:.3f}, ds: {:.3f}".format(self.earthquake[0:2], az, d))
+    ll.debug ("  position: {:.3f}, {:.3f}, {:.3f}".format (*self.earthquaked))
 
     ll.debug ("=> calulcating station positions in degrees..")
     self.stationsd = []
@@ -87,10 +87,10 @@ class Geometry:
       _a, _b, dist = g.inv (lon, lat, self.earthquaked[0], self.earthquaked[1])
       dist = dist / 1000.0
       self.distancesd.append (dist)
-      ll.debug ("  {}: {}, az: {}, ds: {}, epicenter: {}".format(s[0], s[1:3], az, d, dist))
+      ll.debug ("  {}: {}, az: {:.3f}, ds: {:.3f}, epicenter: {:.3f}".format(s[0], s[1:3], az, d, dist))
 
     ll.info ("=> stations (deg):")
     for s in self.stationsd:
-      ll.info ("  {}: {}, {}, {}".format(*s))
+      ll.info ("  {}: {:.3f}, {:.3f}, {:.3f}".format(*s))
 
 
