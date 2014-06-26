@@ -155,10 +155,10 @@ class HyComp:
     ## Calculate traveltimes using TauP
     self.taup = TauP (self.outdir, self.geometry, os.path.abspath(self.phasef))
 
-    self.taup_times = self.taup.calculate_times ()
+    self.taup_ttimes = self.taup.calculate_times ()
 
     ## write out traveltimes from TauP
-    taup_ttimes_f = os.path.join (outdir, "taup_ttimes.dat")
+    taup_ttimes_f = os.path.join (self.outdir, "taup_ttimes.dat")
     with open(taup_ttimes_f, 'w') as fd:
       for ph in self.taup.times:
         fd.write ("{station},{phase},{time},{distance}\n".format(
@@ -166,11 +166,11 @@ class HyComp:
                   distance = ph[3]))
 
     ## set up HYPOMOD
-    self.hypmod = Hypomod (self.outdir, self.geometry)
-    self.hypmod_ttimes = self.hypmod.calculate_times ()
+    self.hypomod = Hypomod (self.outdir, self.geometry)
+    self.hypomod_ttimes = self.hypomod.calculate_times ()
 
-    ## set up TTLAYER
-    self.ttlayer = TTlayer (self.outdir, self.geometry)
+    ### set up TTLAYER
+    #self.ttlayer = TTlayer (self.outdir, self.geometry)
 
 if __name__ == '__main__':
   args        = parser.parse_args ()

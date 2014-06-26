@@ -1,0 +1,25 @@
+# velocity model used to generate hypocenter, hyposat and TauP
+# models
+#
+# the format is:
+# depth,velp,vels,special-identifier
+#
+# depths and velocities are in km and km / second
+#
+# the special identifier can be used to denote one of:
+#
+# MOHO:     moho discontinuity
+# surface:  surface
+# seafloor: seafloor when applicable
+
+# blank lines and lines starting with # are ignored
+
+0.0 , 1.5,  1.5,   surface
+4.6 , 1.5,  1.5,   seafloor
+4.6 , 3.5,  2.02,
+7.0 , 5.4,  3.12,  MOHO
+7.0 , 7.4,  4.5,
+10.0, 8.1,  4.68,
+40.0, 8.25, 4.76,
+
+

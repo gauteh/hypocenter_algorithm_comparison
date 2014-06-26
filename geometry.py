@@ -20,6 +20,9 @@ g = Geod (ellps = 'WGS84')
 
 class Geometry:
   def __init__ (self, reference, stations, earthquake, velocities):
+    self.setup (reference, stations, earthquake, velocities)
+
+  def setup (self, reference, stations, earthquake, velocities):
     ll.info ("geometry: setting up..")
     self.reference = reference
     self.stations  = stations
