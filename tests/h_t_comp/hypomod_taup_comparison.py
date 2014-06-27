@@ -38,7 +38,7 @@ hyc = HyComp ('out', geometryf, velf, phasef)
 ## set up range to test
 s0 = 0.0   # km, start
 s1 = 100.1 # km, stop
-ds = 50.0  # km, delta
+ds = 1.0  # km, delta
 
 direction = np.array([0., 1.0]) # to move station
 
@@ -106,6 +106,8 @@ plt.plot (distances, ptimes[:,1], label = 'Hypomod (P)')
 plt.plot (distances, stimes[:,0], label = 'TauP (S)')
 plt.plot (distances, stimes[:,1], label = 'Hypomod (S)')
 
+plt.grid ()
+
 plt.xlabel ('Distance [km]')
 plt.ylabel ('Time [s]')
 plt.title ('Travel time over distance')
@@ -119,6 +121,6 @@ ll.info ("=> traveltimes plotted in: out/traveltimes.png")
 
 ## save results
 ll.info ("=> traveltimes saved to: out/traveltimes.csv")
-data = np.concatenate ([distances.reshape((3,1)), ptimes, stimes], 1)
+data = np.concatenate ([distances.reshape((len(distances),1)), ptimes, stimes], 1)
 np.savetxt ('out/traveltimes.csv', data, '%f', delimiter = ',')
 

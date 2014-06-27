@@ -28,14 +28,15 @@ class TauP:
     self.phasef     = phasef
     self.set_geometry (geometry)
 
-  def set_geometry (self, geometry):
+  def set_geometry (self, geometry, regen_velocity = True):
     self.geometry   = geometry
     self.velocity   = geometry.velocities
     self.velf       = ""
     self.stations   = geometry.stations
     self.earthquake = geometry.earthquake
 
-    self.create_velocity_model ()
+    if regen_velocity:
+      self.create_velocity_model ()
 
   def create_velocity_model (self):
     ll.info ("=> generate velocity model for TauP..: taup_regional.nd")
