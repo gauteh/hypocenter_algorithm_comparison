@@ -15,7 +15,7 @@ import logging as ll
 from subprocess import check_call, check_output
 
 class TauP:
-  times = None 
+  times = None
 
   def __init__ (self, outdir, geometry, phasef):
     """
@@ -69,7 +69,7 @@ class TauP:
            vel = os.path.basename(self.velf).replace (".nd", ""), depth = -self.earthquake[2],
            dist = dist, pf = self.phasef)
 
-    print (cmd)
+    #print (cmd)
 
     out = check_output (cmd, cwd = self.outdir, shell = True)
     out = out.decode ('ascii')

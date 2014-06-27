@@ -14,6 +14,8 @@ import logging as ll
 import numpy as np
 import scipy as sc
 
+import matplotlib.pyplot as plt
+
 from subprocess import check_call
 
 sys.path.append (os.path.abspath('.'))
@@ -45,6 +47,10 @@ eq = np.array([10.0, 10., -20.])
 reference   = hyc.geometry.reference
 velocities  = hyc.geometry.velocities
 
+distances = []
+ptimes    = []
+stimes    = []
+
 for d in np.arange (s0, s1, ds):
   ll.info ("compare: testing distance {}..".format (d))
 
@@ -66,7 +72,53 @@ for d in np.arange (s0, s1, ds):
   taup_times = hyc.taup_ttimes
   hypomod_times = hyc.hypomod_ttimes
 
-  print (taup_times)
-  print (hypomod_times)
+  distances.append (d)
 
+  try:
+    pt = float(next(t[2] for t in taup_times if t[1] == 'p'))
+  except:
+    pt = np.nan
+
+  ptimes.append ([pt, hypomod_times[0][0][2]])
+
+  try:
+    st = float(next(t[2] for t in taup_times if t[1] == 's4.6p'))
+  except:
+    st = np.nan
+
+  stimes.append ([st, hypomod_times[0][1][2]])
+
+distances = np.array(distances)
+ptimes    = np.array(ptimes)
+stimes    = np.array(stimes)
+
+print (distances)
+print (ptimes)
+print (stimes)
+
+## plot travel times
+plt.figure (1)
+plt.clf ()
+
+plt.plot (distances, ptimes[:,0], label = 'TauP (P)')
+plt.plot (distances, ptimes[:,1], label = 'Hypomod (P)')
+
+plt.plot (distances, stimes[:,0], label = 'TauP (S)')
+plt.plot (distances, stimes[:,1], label = 'Hypomod (S)')
+
+plt.xlabel ('Distance [km]')
+plt.ylabel ('Time [s]')
+plt.title ('Travel time over distance')
+
+plt.legend ()
+plt.tight_layout ()
+
+plt.show (False)
+plt.savefig ('out/traveltimes.png')
+ll.info ("=> traveltimes plotted in: out/traveltimes.png")
+
+## save results
+ll.info ("=> traveltimes saved to: out/traveltimes.csv")
+data = np.concatenate ([distances.reshape((3,1)), ptimes, stimes], 1)
+np.savetxt ('out/traveltimes.csv', data, '%f', delimiter = ',')
 
