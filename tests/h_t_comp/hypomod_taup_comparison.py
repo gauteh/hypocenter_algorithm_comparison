@@ -38,7 +38,7 @@ hyc = HyComp ('out', geometryf, velf, phasef)
 ## set up range to test
 s0 = 0.0   # km, start
 s1 = 100.1 # km, stop
-ds = 1.0  # km, delta
+ds = 50.0  # km, delta
 
 direction = np.array([0., 1.0]) # to move station
 
@@ -95,14 +95,17 @@ distances = np.array(distances)
 ptimes    = np.array(ptimes)
 stimes    = np.array(stimes)
 
+ttimes    = np.concatenate ([distances.reshape((len(distances),1)), ptimes, stimes], 1)
+
 print (distances)
 print (ptimes)
 print (stimes)
 
 ## plot travel times
-plt.figure (1)
+plt.figure ()
 plt.clf ()
 
+plt.subplot (1,2,1)
 plt.plot (distances, ptimes[:,0], label = 'TauP (P)')
 plt.plot (distances, ptimes[:,1], label = 'Hypomod (P)')
 
@@ -114,6 +117,16 @@ plt.grid ()
 plt.xlabel ('Distance [km]')
 plt.ylabel ('Time [s]')
 plt.title ('Travel time over distance')
+plt.legend ()
+
+plt.subplot (1,2,2)
+plt.plot (distances, ptimes[:,0] - ptimes[:,1], label = 'P (difference)')
+plt.plot (distances, stimes[:,0] - stimes[:,1], label = 'S (difference)')
+plt.xlabel ('Distance [km]')
+plt.ylabel ('Time [s]')
+plt.title ('Difference (TauP - Hypomod)')
+plt.grid ()
+plt.suptitle ('Travel time')
 
 plt.legend ()
 plt.tight_layout ()
@@ -122,8 +135,32 @@ plt.show (False)
 plt.savefig ('out/traveltimes.png')
 ll.info ("=> traveltimes plotted in: out/traveltimes.png")
 
+## plot S-P difference
+plt.figure ()
+plt.clf ()
+
+s_p_taup        = stimes[:,0] - ptimes[:,0]
+s_p_hypomod     = stimes[:,1] - ptimes[:,1]
+
+plt.subplot (1,2,1)
+plt.plot (distances, s_p_taup, label = 'S - P (TauP)')
+plt.plot (distances, s_p_hypomod, label = 'S - P (Hypomod)')
+plt.ylabel ('Time [s]')
+plt.xlabel ('Distance [km]')
+plt.title ('S - P travel times')
+plt.grid ()
+plt.legend ()
+
+plt.subplot (1,2,2)
+plt.plot (distances, s_p_hypomod - s_p_taup)
+plt.title ('Difference (Hypomod - TauP)')
+plt.ylabel ('Time [s]')
+plt.xlabel ('Distance [km]')
+plt.grid ()
+plt.suptitle ('Travel time differences (S - P)')
+plt.show (False)
+
 ## save results
 ll.info ("=> traveltimes saved to: out/traveltimes.csv")
-data = np.concatenate ([distances.reshape((len(distances),1)), ptimes, stimes], 1)
-np.savetxt ('out/traveltimes.csv', data, '%f', delimiter = ',')
+np.savetxt ('out/traveltimes.csv', ttimes, '%f', delimiter = ',')
 
