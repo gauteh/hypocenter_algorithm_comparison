@@ -42,7 +42,7 @@ ds = 1.0  # km, delta
 
 direction = np.array([0., 1.0]) # to move station
 
-eq = np.array([10.0, 10., -20.])
+eq = np.array([10.0, 10., -80.])
 
 reference   = hyc.geometry.reference
 velocities  = hyc.geometry.velocities
@@ -50,6 +50,8 @@ velocities  = hyc.geometry.velocities
 distances = []
 ptimes    = []
 stimes    = []
+
+first = True
 
 for d in np.arange (s0, s1, ds):
   ll.info ("compare: testing distance {}..".format (d))
@@ -67,7 +69,8 @@ for d in np.arange (s0, s1, ds):
   ll.debug (" => setting up geometry..")
   hyc.geometry.setup (reference, sta, eq, velocities)
 
-  hyc.calculate_ttimes ()
+  hyc.calculate_ttimes (regen_velocity = first)
+  first = False
 
   taup_times = hyc.taup_ttimes
   hypomod_times = hyc.hypomod_ttimes

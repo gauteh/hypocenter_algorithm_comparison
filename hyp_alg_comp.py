@@ -151,9 +151,9 @@ class HyComp:
 
     self.geometry = Geometry (reference, stations, earthquake, velocity)
 
-  def calculate_ttimes (self):
+  def calculate_ttimes (self, regen_velocity = True):
     ## Calculate traveltimes using TauP
-    self.taup = TauP (self.outdir, self.geometry, os.path.abspath(self.phasef))
+    self.taup = TauP (self.outdir, self.geometry, os.path.abspath(self.phasef), regen_velocity)
 
     self.taup_ttimes = self.taup.calculate_times ()
 

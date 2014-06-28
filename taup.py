@@ -17,7 +17,7 @@ from subprocess import check_call, check_output
 class TauP:
   times = None
 
-  def __init__ (self, outdir, geometry, phasef):
+  def __init__ (self, outdir, geometry, phasef, regen_velocity = True):
     """
     Set up everything needed for running taup_time,
     file names are relative to outdir.
@@ -26,12 +26,12 @@ class TauP:
 
     self.outdir     = outdir
     self.phasef     = phasef
-    self.set_geometry (geometry)
+    self.set_geometry (geometry, regen_velocity)
 
   def set_geometry (self, geometry, regen_velocity = True):
     self.geometry   = geometry
     self.velocity   = geometry.velocities
-    self.velf       = ""
+    self.velf       = os.path.join (self.outdir, "taup_regional.nd")
     self.stations   = geometry.stations
     self.earthquake = geometry.earthquake
 
@@ -41,7 +41,6 @@ class TauP:
   def create_velocity_model (self):
     ll.info ("=> generate velocity model for TauP..: taup_regional.nd")
 
-    self.velf = os.path.join (self.outdir, "taup_regional.nd")
     with open (self.velf, 'w') as fd:
       for v in self.velocity:
         fd.write ("%1.1f %1.1f %1.1f\n" % (v[0], v[1], v[2]))
