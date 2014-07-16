@@ -40,9 +40,9 @@ s0 = 0.0   # km, start
 s1 = 100.1 # km, stop
 ds = 50.0  # km, delta
 
-direction = np.array([0., 1.0]) # to move station
+direction = np.array([0., -1.0]) # to move station
 
-eq = np.array([10.0, 10., -80.])
+eq = np.array([10., 10., -80.])
 
 reference   = hyc.geometry.reference
 velocities  = hyc.geometry.velocities
@@ -135,7 +135,7 @@ plt.show (False)
 plt.savefig ('out/traveltimes.png')
 ll.info ("=> traveltimes plotted in: out/traveltimes.png")
 
-## plot S-P difference
+## plot S-P absolute time difference
 plt.figure ()
 plt.clf ()
 
@@ -159,6 +159,8 @@ plt.xlabel ('Distance [km]')
 plt.grid ()
 plt.suptitle ('Travel time differences (S - P)')
 plt.show (False)
+plt.savefig ('out/traveltimes_diff.png')
+ll.info ("=> traveltimes plotted in: out/traveltimes_diff.png")
 
 ## save results
 ll.info ("=> traveltimes saved to: out/traveltimes.csv")
