@@ -5,16 +5,6 @@
 # Test hyposat output vs. hypocenter and TauP for given
 # setup.
 #
-#
-# Requirements:
-# - numpy and scipy
-# - HYPOSAT
-# - HYPOMOD     (forward modelling for HYPOSAT)
-# - HYPOCENTER  (as provided by SEISAN)
-# - TTLAYER     (as provided by SEISAN) (forward modelling for HYPOCENTER)
-# - TauP
-#
-
 ## This program will set up a test geometry of stations and
 ## a earthquake. Synthetic traveltimes will then be generated
 ## using the forward modelling packages for HYPOSAT, HYPOCENTER
