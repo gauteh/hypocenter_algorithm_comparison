@@ -13,8 +13,7 @@ import logging as ll
 
 from subprocess import check_call, check_output
 
-sys.path.append ('/home/gaute/dev/nersc/acoustic_processing/')
-from utils.coordinates import *
+from coordinates import *
 
 class Hypomod:
   def __init__ (self, outdir, geometry):

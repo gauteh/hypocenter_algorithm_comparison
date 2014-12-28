@@ -7,8 +7,7 @@
 
 import sys, os
 
-sys.path.append ('/home/gaute/dev/nersc/acoustic_processing/')
-from utils.coordinates import * # from acoustic_processing (nersc)
+from coordinates import *
 
 import logging as ll
 
