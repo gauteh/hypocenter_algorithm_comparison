@@ -23,6 +23,9 @@
 ## Arbitrary input geometries may be specified, but the parameters for the
 ## solvers are tweaked for local stations and earthquakes (
 ## ~10-30 km distances) and relatively shallow depths (~ 5-10 km).
+##
+## Currently only HYPOSAT and TauP interfaces are completed.
+##
 
 
 import os, sys
