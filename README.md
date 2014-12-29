@@ -9,6 +9,7 @@ for:
 ## requirements
 
 - numpy and scipy
+- pyproj
 - HYPOSAT
 - HYPOMOD     (forward modelling for HYPOSAT)
 - HYPOCENTER  (as provided by SEISAN)
