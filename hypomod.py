@@ -173,11 +173,12 @@ OUTPUT LEVEL                       : 4
         llat += lat[k:]
         lat = llat
 
+        print (lat, lon)
         sfd.write ("{0:<5s} {1:>9}{2:>10} {3:6.1f}\n".format(s[0], lat, lon, s[3]))
 
-  def calculate_times (self):
+  def calculate_times (self, timeout = None):
     ll.info ("=> hypomod: running HYPOMOD..")
-    check_output ("hypomod", cwd = self.outdir, shell = True)
+    check_output ("hypomod", cwd = self.outdir, shell = True, timeout = timeout)
 
     return self.parse_times ()
 
