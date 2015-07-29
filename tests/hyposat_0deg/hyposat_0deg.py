@@ -100,6 +100,7 @@ try:
   print (ttimes)
 except TimeoutExpired:
   ll.error ('**=> hypomod timed out, infinite loop?')
+  sys.exit (1)
 
 case = case + 1
 
