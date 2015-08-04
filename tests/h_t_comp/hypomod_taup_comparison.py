@@ -38,7 +38,7 @@ hyc = HyComp ('out', geometryf, velf, phasef)
 ## set up range to test
 s0 = 0.0   # km, start
 s1 = 100.1 # km, stop
-ds = 50.0  # km, delta
+ds = 5.0  # km, delta
 
 direction = np.array([0., -1.0]) # to move station
 
